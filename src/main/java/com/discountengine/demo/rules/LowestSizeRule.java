@@ -14,41 +14,33 @@ public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDisco
 
     private static final Logger logger = LoggerFactory.getLogger(LowestSizeRule.class);
     private static final BigDecimal DEFAULT_MIN = BigDecimal.valueOf(Double.MIN_VALUE);
-    private static BigDecimal lowestPrice = BigDecimal.valueOf(Double.MAX_VALUE);
+    private static final BigDecimal lowestPrice;
 
-    public void setLowestPrice() {
+    static {
         Optional<BigDecimal> lowestPriceOptional = PriceLoader.PRICE_LIST.stream()
                 .filter(size -> size.getPackageSize().equalsIgnoreCase("S"))
                 .map(price -> price.getPrice())
                 .min(Comparator.naturalOrder());
 
-        lowestPrice = lowestPriceOptional.get();
-        //todo minPrice isn't found throw exception
+        lowestPrice = lowestPriceOptional.isPresent() ? lowestPriceOptional.get() : BigDecimal.valueOf(Double.MAX_VALUE);
     }
 
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
 
-        Optional<Price> selectedPrice = PriceLoader.PRICE_LIST.stream()
+        Optional<Price> actualPrice = PriceLoader.PRICE_LIST.stream()
                 .filter(
                         deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
                                 deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
                 .findFirst();
-        input.setOriginalPrice(selectedPrice.get().getPrice());
-        input.setDiscountedPrice(selectedPrice.get().getPrice());
+        input.setOriginalPrice(actualPrice.get().getPrice());
+        input.setDiscountedPrice(actualPrice.get().getPrice());
         input.setDiscount(null);
 
-        if (input.getPackageSize().equalsIgnoreCase("S")) {
-            this.setLowestPrice();
-            if (!selectedPrice.isPresent()) {
-                selectedPrice = Optional.of(new Price(null, null, DEFAULT_MIN));
-            }
-
-//            logger.info("original price {}, lowest price {}", selectedPrice.get().getPrice(), lowestPrice);
-
-            //todo selectPrice isn't found throw exception
-            input.setOriginalPrice(selectedPrice.get().getPrice());
-            return selectedPrice.get().getPrice().compareTo(lowestPrice) == 1;
+        if(input.getPackageSize().equalsIgnoreCase("S") && actualPrice.get().getPrice().compareTo(lowestPrice) == 1){
+            input.setDiscountedPrice(lowestPrice.compareTo(DEFAULT_MIN) == 0 ? null : lowestPrice);
+            input.setDiscount(input.getOriginalPrice().subtract(lowestPrice));
+            return true;
         }
 
         return false;
@@ -57,8 +49,6 @@ public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDisco
 
     @Override
     public DeliveryDiscountInfo process(DeliveryDiscountInfo input) {
-        input.setDiscountedPrice(lowestPrice.compareTo(DEFAULT_MIN) == 0 ? null : lowestPrice);
-        input.setDiscount(input.getOriginalPrice().subtract(lowestPrice));
         return input;
     }
 }

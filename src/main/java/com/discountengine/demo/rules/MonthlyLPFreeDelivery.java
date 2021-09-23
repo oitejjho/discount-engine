@@ -55,7 +55,6 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
                 if (!selectedPrice.isPresent()) {
                     selectedPrice = Optional.of(new Price(null, null, DEFAULT_MIN));
                 }
-//                logger.info("original price {}", selectedPrice.get().getPrice());
 
                 //todo selectPrice isn't found throw exception
                 input.setOriginalPrice(selectedPrice.get().getPrice());
