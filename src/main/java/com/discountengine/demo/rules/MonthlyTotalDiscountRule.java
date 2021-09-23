@@ -15,17 +15,17 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
     private static final Logger logger = LoggerFactory.getLogger(MonthlyTotalDiscountRule.class);
     public static Map<String, BigDecimal> monthlyDiscount;
 
-    private MonthlyLPFreeDelivery monthlyLPFreeDelivery;
-    private LowestSizeRule lowestSizeRule;
-
-    public MonthlyTotalDiscountRule(MonthlyLPFreeDelivery monthlyLPFreeDelivery,
-                                    LowestSizeRule lowestSizeRule){
-        this.monthlyLPFreeDelivery = monthlyLPFreeDelivery;
-        this.lowestSizeRule = lowestSizeRule;
-    }
-
     static {
         monthlyDiscount = new HashMap<>();
+    }
+
+    private final MonthlyLPFreeDelivery monthlyLPFreeDelivery;
+    private final LowestSizeRule lowestSizeRule;
+
+    public MonthlyTotalDiscountRule(MonthlyLPFreeDelivery monthlyLPFreeDelivery,
+                                    LowestSizeRule lowestSizeRule) {
+        this.monthlyLPFreeDelivery = monthlyLPFreeDelivery;
+        this.lowestSizeRule = lowestSizeRule;
     }
 
     public BigDecimal calculateDiscount(LocalDate date, BigDecimal discount) {
@@ -61,20 +61,23 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
 
 
         //determine discount from MONTHLY LP
-        if(this.monthlyLPFreeDelivery.matches(input)){
+        if (this.monthlyLPFreeDelivery.matches(input)) {
             BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());
             input.setDiscountedPrice(input.getOriginalPrice().subtract(discount));
             input.setDiscount(discount);
+            input.setMatched(true);
             return true;
         }
 
         //determine discount from lowest size
-        if(this.lowestSizeRule.matches(input)){
+        if (this.lowestSizeRule.matches(input)) {
             BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());
             input.setDiscountedPrice(input.getOriginalPrice().subtract(discount));
             input.setDiscount(discount);
+            input.setMatched(true);
             return true;
         }
+
 
         return false;
 

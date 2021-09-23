@@ -40,6 +40,7 @@ public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDisco
         if(input.getPackageSize().equalsIgnoreCase("S") && actualPrice.get().getPrice().compareTo(lowestPrice) == 1){
             input.setDiscountedPrice(lowestPrice.compareTo(DEFAULT_MIN) == 0 ? null : lowestPrice);
             input.setDiscount(input.getOriginalPrice().subtract(lowestPrice));
+            input.setMatched(true);
             return true;
         }
 
