@@ -4,6 +4,7 @@ import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.ruleengine.RuleEngine;
 import com.discountengine.demo.rules.LowestSizeRule;
 import com.discountengine.demo.rules.MonthlyLPFreeDelivery;
+import com.discountengine.demo.rules.MonthlyTotalDiscountRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +22,14 @@ public class DiscountEngineApp {
         RuleLoader.loadRules("rules.yml");*/
 
         RuleEngine ruleEngine = new RuleEngine();
-        ruleEngine.registerRule(new MonthlyLPFreeDelivery());
-        ruleEngine.registerRule(new LowestSizeRule());
+        MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery();
+        LowestSizeRule lowestSizeRule = new LowestSizeRule();
+        MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule(monthlyLPFreeDelivery , lowestSizeRule);
+
+
+        ruleEngine.registerRule(monthlyTotalDiscountRule);
+        ruleEngine.registerRule(monthlyLPFreeDelivery);
+        ruleEngine.registerRule(lowestSizeRule);
 //        ruleEngine.registerRule();
 
         List<DeliveryDiscountInfo> deliveryDiscountInfoList = new ArrayList<>();

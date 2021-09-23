@@ -40,7 +40,7 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
 
         Optional<Price> selectedPrice = PriceLoader.PRICE_LIST.stream()
                 .filter(
-                        deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(NAME) &&
+                        deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
                                 deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
                 .findFirst();
         input.setOriginalPrice(selectedPrice.get().getPrice());
