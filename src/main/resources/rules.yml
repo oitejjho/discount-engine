@@ -1,0 +1,28 @@
+- name: firstRule
+  priority: 0
+  conditions:
+    - period: MONTH
+    - max_discount: 10
+#  actions:
+#    - discount:
+#        flat: true
+#        amount: 0.0
+- name: secondRule
+  priority: 1
+  conditions:
+    - providers: LP
+    - period: MONTH
+    - nth_free_delivery: 3
+#  actions:
+#    - discount:
+#        flat: false
+#        amount: 100.0
+- name: thirdRule
+  priority: 2
+  conditions:
+    - size: S
+    - price: MIN
+#  actions:
+#    - discount:
+#        flat: false
+#        amount: 100.0
