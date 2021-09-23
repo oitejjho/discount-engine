@@ -15,16 +15,6 @@
     </properties>
 
     <dependencies>
-        <!--<dependency>
-            <groupId>org.jeasy</groupId>
-            <artifactId>easy-rules-core</artifactId>
-            <version>3.0.0</version>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.deliveredtechnologies</groupId>
-            <artifactId>rulebook-core</artifactId>
-            <version>0.6.2</version>
-        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -41,8 +31,6 @@
             <version>${org.projectlombok.version}</version>
             <scope>provided</scope>
         </dependency>
-
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
