@@ -83,6 +83,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/com/discountengine/demo/converter/StringToDeliveryDiscountInfo.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/main/java/com/discountengine/demo/interceptor/TotalDiscountInterceptor.java">
           <value>
             <set />
@@ -144,6 +149,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/src/main/java/com/discountengine/demo/rules/MonthlyTotalDiscountRule.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/main/java/com/discountengine/demo/util/FileOperations.java">
           <value>
             <set />
           </value>
