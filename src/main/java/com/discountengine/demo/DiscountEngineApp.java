@@ -24,7 +24,9 @@ public class DiscountEngineApp {
         RuleEngine ruleEngine = new RuleEngine();
         MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery();
         LowestSizeRule lowestSizeRule = new LowestSizeRule();
-        MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule(monthlyLPFreeDelivery, lowestSizeRule);
+        MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule();
+        monthlyTotalDiscountRule.add(lowestSizeRule);
+        monthlyTotalDiscountRule.add(monthlyLPFreeDelivery);
 
         ruleEngine.registerRule(monthlyTotalDiscountRule);
         ruleEngine.registerRule(monthlyLPFreeDelivery);
@@ -32,7 +34,7 @@ public class DiscountEngineApp {
 
         Flux<String> deliveryInfoFlux = FileOperations.readLines(FileOperations.INPUT_FILE_PATH);
         Mono<List<DeliveryDiscountInfo>> listMono = deliveryInfoFlux
-                .map(StringToDeliveryDiscountInfo::convert)
+                .map(new StringToDeliveryDiscountInfo()::convert)
                 .map(ruleEngine::rule)
                 .doOnNext(s -> logger.info("{}", s))
                 .onErrorContinue((throwable, s) -> logger.warn("{} ignored ", s))

@@ -6,26 +6,32 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
     public static final BigDecimal TOTAL_DISCOUNT = new BigDecimal(10);
     private static final Logger logger = LoggerFactory.getLogger(MonthlyTotalDiscountRule.class);
-    public static Map<String, BigDecimal> monthlyDiscount;
+    public static Map<String, BigDecimal> monthlyDiscount = new HashMap<>();
 
-    static {
-        monthlyDiscount = new HashMap<>();
+
+    private final List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> dependencies;
+
+    public MonthlyTotalDiscountRule() {
+        dependencies = new ArrayList<>();
     }
 
-    private final MonthlyLPFreeDelivery monthlyLPFreeDelivery;
-    private final LowestSizeRule lowestSizeRule;
+    public MonthlyTotalDiscountRule add(IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> dependency) {
+        dependencies.add(dependency);
+        return this;
+    }
 
-    public MonthlyTotalDiscountRule(MonthlyLPFreeDelivery monthlyLPFreeDelivery,
-                                    LowestSizeRule lowestSizeRule) {
-        this.monthlyLPFreeDelivery = monthlyLPFreeDelivery;
-        this.lowestSizeRule = lowestSizeRule;
+    public MonthlyTotalDiscountRule add(List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> dependencies) {
+        this.dependencies.addAll(dependencies);
+        return this;
     }
 
     public BigDecimal calculateDiscount(LocalDate date, BigDecimal discount) {
@@ -59,26 +65,16 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
 
-
-        //determine discount from MONTHLY LP
-        if (this.monthlyLPFreeDelivery.matches(input)) {
-            BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());
-            input.setDiscountedPrice(input.getOriginalPrice().subtract(discount));
-            input.setDiscount(discount);
-            input.setMatched(true);
-            return true;
+        for (IRule rule :
+                this.dependencies) {
+            if (rule.matches(input)) {
+                BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());
+                input.setDiscountedPrice(input.getOriginalPrice().subtract(discount));
+                input.setDiscount(discount);
+                input.setMatched(true);
+                return true;
+            }
         }
-
-        //determine discount from lowest size
-        if (this.lowestSizeRule.matches(input)) {
-            BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());
-            input.setDiscountedPrice(input.getOriginalPrice().subtract(discount));
-            input.setDiscount(discount);
-            input.setMatched(true);
-            return true;
-        }
-
-
         return false;
 
     }

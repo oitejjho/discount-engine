@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RuleEngine {
 
-    List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> rules;
+    private final List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> rules;
 
     public RuleEngine() {
         rules = new ArrayList<>();
@@ -22,7 +22,7 @@ public class RuleEngine {
                 .orElse(info);
     }
 
-    public RuleEngine registerRule(IRule rule) {
+    public RuleEngine registerRule(IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> rule) {
         rules.add(rule);
         return this;
     }

@@ -2,7 +2,7 @@ package com.discountengine.demo.rules;
 
 import com.discountengine.demo.loader.PriceLoader;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
-import com.discountengine.demo.model.Price;
+import com.discountengine.demo.model.PriceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +37,8 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
 
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
-
-        Optional<Price> selectedPrice = PriceLoader.PRICE_LIST.stream()
+        PriceLoader priceLoader = new PriceLoader();
+        Optional<PriceInfo> selectedPrice = priceLoader.getPriceInfos().stream()
                 .filter(
                         deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
                                 deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
@@ -54,7 +54,7 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
             if (isFreeDelivery) {
 
                 if (!selectedPrice.isPresent()) {
-                    selectedPrice = Optional.of(new Price(null, null, DEFAULT_MIN));
+                    selectedPrice = Optional.of(new PriceInfo(null, null, DEFAULT_MIN));
                 }
 
                 //todo selectPrice isn't found throw exception
