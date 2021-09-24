@@ -1,10 +1,9 @@
 package com.discountengine.demo.rules;
 
+import com.discountengine.demo.exception.InvalidInputException;
 import com.discountengine.demo.loader.PriceLoader;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.model.PriceInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -12,15 +11,14 @@ import java.util.Optional;
 
 public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
-    private static final Logger logger = LoggerFactory.getLogger(LowestSizeRule.class);
-    private BigDecimal DEFAULT_MIN = BigDecimal.valueOf(Double.MIN_VALUE);
-    private BigDecimal lowestPrice;
+    private final BigDecimal defaultMinPrice = BigDecimal.valueOf(Double.MIN_VALUE);
+    private final BigDecimal lowestPrice;
 
-    public LowestSizeRule(){
+    public LowestSizeRule() {
         PriceLoader priceLoader = new PriceLoader();
         Optional<BigDecimal> lowestPriceOptional = priceLoader.getPriceInfos().stream()
                 .filter(size -> size.getPackageSize().equalsIgnoreCase("S"))
-                .map(priceInfo -> priceInfo.getPrice())
+                .map(PriceInfo::getPrice)
                 .min(Comparator.naturalOrder());
 
         lowestPrice = lowestPriceOptional.isPresent() ? lowestPriceOptional.get() : BigDecimal.valueOf(Double.MAX_VALUE);
@@ -34,12 +32,17 @@ public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDisco
                         deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
                                 deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
                 .findFirst();
+
+        if (!actualPrice.isPresent()) {
+            throw new InvalidInputException("Invalid input found");
+        }
+
         input.setOriginalPrice(actualPrice.get().getPrice());
         input.setDiscountedPrice(actualPrice.get().getPrice());
         input.setDiscount(null);
 
-        if(input.getPackageSize().equalsIgnoreCase("S") && actualPrice.get().getPrice().compareTo(lowestPrice) == 1){
-            input.setDiscountedPrice(lowestPrice.compareTo(DEFAULT_MIN) == 0 ? null : lowestPrice);
+        if (input.getPackageSize().equalsIgnoreCase("S") && actualPrice.get().getPrice().compareTo(lowestPrice) > 0) {
+            input.setDiscountedPrice(lowestPrice.compareTo(defaultMinPrice) == 0 ? null : lowestPrice);
             input.setDiscount(input.getOriginalPrice().subtract(lowestPrice));
             input.setMatched(true);
             return true;

@@ -14,7 +14,6 @@ import java.util.Map;
 public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
     public static final BigDecimal TOTAL_DISCOUNT = new BigDecimal(10);
-    private static final Logger logger = LoggerFactory.getLogger(MonthlyTotalDiscountRule.class);
     public static Map<String, BigDecimal> monthlyDiscount = new HashMap<>();
 
 
@@ -65,7 +64,7 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
 
-        for (IRule rule :
+        for (IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> rule :
                 this.dependencies) {
             if (rule.matches(input)) {
                 BigDecimal discount = this.calculateDiscount(input.getBookingDate(), input.getDiscount());

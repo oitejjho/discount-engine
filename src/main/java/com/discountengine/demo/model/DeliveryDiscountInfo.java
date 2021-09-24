@@ -33,7 +33,7 @@ public class DeliveryDiscountInfo {
                 bookingDate +
                         " " + packageSize +
                         " " + carrierCode +
-                        " " + discountedPrice.setScale(2, RoundingMode.CEILING) +
+                        " " + (discountedPrice != null ? discountedPrice.setScale(2, RoundingMode.CEILING) : "-") +
                         " " + (discount != null ? discount.setScale(2, RoundingMode.CEILING) : "-");
     }
 }
