@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DiscountEngineApp {
 
-    private static final Logger logger = LoggerFactory.getLogger(LowestSizeRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(DiscountEngineApp.class);
 
     public static void main(String[] args) throws IOException {
 
@@ -32,7 +32,7 @@ public class DiscountEngineApp {
         ruleEngine.registerRule(monthlyLPFreeDelivery);
         ruleEngine.registerRule(lowestSizeRule);
 
-        Flux<String> deliveryInfoFlux = FileOperations.readLines(FileOperations.INPUT_FILE_PATH);
+        Flux<String> deliveryInfoFlux = FileOperations.readLines("input.txt");
         Mono<List<DeliveryDiscountInfo>> listMono = deliveryInfoFlux
                 .map(new StringToDeliveryDiscountInfo()::convert)
                 .map(ruleEngine::rule)
@@ -41,7 +41,7 @@ public class DiscountEngineApp {
                 .collectList();
         Flux<DeliveryDiscountInfo> deliveryDiscountInfoFlux = listMono
                 .flatMapMany(Flux::fromIterable);
-        FileOperations.writeLines(FileOperations.OUTPUT_FILE_PATH, deliveryDiscountInfoFlux);
+        FileOperations.writeLines("output.txt", deliveryDiscountInfoFlux);
 
 
     }

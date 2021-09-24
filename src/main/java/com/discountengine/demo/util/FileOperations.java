@@ -1,11 +1,10 @@
 package com.discountengine.demo.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,34 +13,38 @@ import java.util.stream.Stream;
 
 public class FileOperations {
 
-    public static final String INPUT_FILE_PATH = "src/main/resources/input.txt";
-    public static final String OUTPUT_FILE_PATH = "src/main/resources/output.txt";
+    private static final Logger logger = LoggerFactory.getLogger(FileOperations.class);
 
+    private FileOperations() {
+    }
 
     public static Flux<String> readLines(String fileName) {
-        Path path = Paths.get(fileName);
-        Flux<String> lineFlux = Flux.using(
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        Path path = Paths.get(file.getPath());
+        return Flux.using(
                 () -> Files.lines(path),
                 Flux::fromStream,
                 Stream::close
         );
-        return lineFlux;
     }
 
     public static <T> void writeLines(String fileName, Flux<T> flux) throws IOException {
-        Path path = Paths.get(fileName);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        Path path = Paths.get(file.getPath());
         BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
         flux
-            .subscribe(s -> write(bufferedWriter, s.toString()),
-                    (e) -> close(bufferedWriter),
-                    () -> close(bufferedWriter)
-            );
+                .subscribe(s -> write(bufferedWriter, s.toString()),
+                        e -> close(bufferedWriter),
+                        () -> close(bufferedWriter)
+                );
     }
 
     private static void close(Closeable closeable) {
         try {
             closeable.close();
-            System.out.println("File is closed");
+            logger.info("File is closed");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -55,6 +58,5 @@ public class FileOperations {
             throw new UncheckedIOException(e);
         }
     }
-
 
 }

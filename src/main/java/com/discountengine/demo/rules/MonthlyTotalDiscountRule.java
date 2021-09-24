@@ -1,8 +1,6 @@
 package com.discountengine.demo.rules;
 
 import com.discountengine.demo.model.DeliveryDiscountInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,14 +11,14 @@ import java.util.Map;
 
 public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
-    public static final BigDecimal TOTAL_DISCOUNT = new BigDecimal(10);
-    public static Map<String, BigDecimal> monthlyDiscount = new HashMap<>();
-
-
+    private final BigDecimal totalDiscount;
+    private final Map<String, BigDecimal> monthlyDiscount;
     private final List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> dependencies;
 
     public MonthlyTotalDiscountRule() {
-        dependencies = new ArrayList<>();
+        this.totalDiscount = new BigDecimal(10);
+        this.monthlyDiscount = new HashMap<>();
+        this.dependencies = new ArrayList<>();
     }
 
     public MonthlyTotalDiscountRule add(IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> dependency) {
@@ -40,8 +38,8 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
 
         if (monthlyDiscount.get(yearMonth) != null) {
             BigDecimal totalDiscountSoFar = monthlyDiscount.get(yearMonth);
-            BigDecimal availableDiscount = TOTAL_DISCOUNT.subtract(totalDiscountSoFar);
-            if (availableDiscount.compareTo(discount) == 0 || availableDiscount.compareTo(discount) == 1) {
+            BigDecimal availableDiscount = totalDiscount.subtract(totalDiscountSoFar);
+            if (availableDiscount.compareTo(discount) == 0 || availableDiscount.compareTo(discount) > 0) {
                 calculatedDiscount = discount;
             } else {
                 calculatedDiscount = availableDiscount;
@@ -50,10 +48,10 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
             monthlyDiscount.put(yearMonth, monthlyDiscount.get(yearMonth).add(calculatedDiscount));
         } else {
 
-            if (TOTAL_DISCOUNT.compareTo(discount) == 0 || TOTAL_DISCOUNT.compareTo(discount) == 1)
+            if (totalDiscount.compareTo(discount) == 0 || totalDiscount.compareTo(discount) > 0)
                 calculatedDiscount = discount;
             else
-                calculatedDiscount = TOTAL_DISCOUNT;
+                calculatedDiscount = totalDiscount;
 
             monthlyDiscount.put(yearMonth, calculatedDiscount);
         }
