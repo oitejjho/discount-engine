@@ -26,4 +26,9 @@ public class RuleEngine {
         rules.add(rule);
         return this;
     }
+
+    public RuleEngine registerRule(List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> rules) {
+        rules.addAll(rules);
+        return this;
+    }
 }
