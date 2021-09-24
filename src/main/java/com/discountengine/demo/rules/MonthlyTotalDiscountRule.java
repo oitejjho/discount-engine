@@ -36,24 +36,24 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
         BigDecimal calculatedDiscount;
         String yearMonth = date.getYear() + "" + date.getMonthValue();
 
-        if (monthlyDiscount.get(yearMonth) != null) {
-            BigDecimal totalDiscountSoFar = monthlyDiscount.get(yearMonth);
-            BigDecimal availableDiscount = totalDiscount.subtract(totalDiscountSoFar);
+        if (this.monthlyDiscount.get(yearMonth) != null) {
+            BigDecimal totalDiscountSoFar = this.monthlyDiscount.get(yearMonth);
+            BigDecimal availableDiscount = this.totalDiscount.subtract(totalDiscountSoFar);
             if (availableDiscount.compareTo(discount) == 0 || availableDiscount.compareTo(discount) > 0) {
                 calculatedDiscount = discount;
             } else {
                 calculatedDiscount = availableDiscount;
             }
 
-            monthlyDiscount.put(yearMonth, monthlyDiscount.get(yearMonth).add(calculatedDiscount));
+            this.monthlyDiscount.put(yearMonth, this.monthlyDiscount.get(yearMonth).add(calculatedDiscount));
         } else {
 
-            if (totalDiscount.compareTo(discount) == 0 || totalDiscount.compareTo(discount) > 0)
+            if (this.totalDiscount.compareTo(discount) == 0 || this.totalDiscount.compareTo(discount) > 0)
                 calculatedDiscount = discount;
             else
-                calculatedDiscount = totalDiscount;
+                calculatedDiscount = this.totalDiscount;
 
-            monthlyDiscount.put(yearMonth, calculatedDiscount);
+            this.monthlyDiscount.put(yearMonth, calculatedDiscount);
         }
 
         return calculatedDiscount;

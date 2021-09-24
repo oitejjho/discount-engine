@@ -1,6 +1,5 @@
 package com.discountengine.demo.rules;
 
-import com.discountengine.demo.exception.InvalidInputException;
 import com.discountengine.demo.loader.PriceLoader;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.model.PriceInfo;
@@ -9,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
@@ -22,7 +20,7 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
     public MonthlyLPFreeDelivery(PriceLoader priceLoader) {
         this.nthFreeDelivery = 3;
         this.name = "LP";
-        this.size  = "L";
+        this.size = "L";
         this.monthlyCount = new HashMap<>();
         this.priceLoader = priceLoader;
     }
@@ -39,18 +37,10 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
 
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
-        Optional<PriceInfo> actualPrice = this.priceLoader.getPriceInfos().stream()
-                .filter(
-                        deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
-                                deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
-                .findFirst();
+        PriceInfo actualPriceInfo = this.priceLoader.getPriceInfo(input.getCarrierCode(), input.getPackageSize());
 
-        if (!actualPrice.isPresent()) {
-            throw new InvalidInputException("Invalid input found");
-        }
-
-        input.setOriginalPrice(actualPrice.get().getPrice());
-        input.setDiscountedPrice(actualPrice.get().getPrice());
+        input.setOriginalPrice(actualPriceInfo.getPrice());
+        input.setDiscountedPrice(actualPriceInfo.getPrice());
         input.setDiscount(null);
 
         if (input.getCarrierCode().equalsIgnoreCase(this.name) && input.getPackageSize().equalsIgnoreCase(this.size)) {
@@ -58,10 +48,9 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
             this.addMonthlySizeCount(input.getBookingDate(), input.getPackageSize());
             boolean isFreeDelivery = this.isFreeDelivery(input.getBookingDate(), input.getPackageSize());
             if (isFreeDelivery) {
-
-                input.setOriginalPrice(actualPrice.get().getPrice());
+                input.setOriginalPrice(actualPriceInfo.getPrice());
                 input.setDiscountedPrice(new BigDecimal(0));
-                input.setDiscount(actualPrice.get().getPrice());
+                input.setDiscount(actualPriceInfo.getPrice());
                 return true;
             }
             return false;

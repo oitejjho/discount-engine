@@ -5,21 +5,13 @@ import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.model.PriceInfo;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.Optional;
 
 public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
     private final PriceLoader priceLoader;
-    private final BigDecimal lowestPrice;
 
     public LowestSizeRule(PriceLoader priceLoader) {
         this.priceLoader = priceLoader;
-        Optional<BigDecimal> lowestPriceOptional = priceLoader.getPriceInfos().stream()
-                .filter(size -> size.getPackageSize().equalsIgnoreCase("S"))
-                .map(PriceInfo::getPrice)
-                .min(Comparator.naturalOrder());
-        lowestPrice = lowestPriceOptional.isPresent() ? lowestPriceOptional.get() : BigDecimal.valueOf(Double.MAX_VALUE);
     }
 
     @Override
@@ -30,6 +22,8 @@ public class LowestSizeRule implements IRule<DeliveryDiscountInfo, DeliveryDisco
             input.setOriginalPrice(actualPriceInfo.getPrice());
             input.setDiscountedPrice(actualPriceInfo.getPrice());
             input.setDiscount(null);
+
+            BigDecimal lowestPrice = this.priceLoader.getLowestPriceBySize("S");
 
             if (actualPriceInfo.getPrice().compareTo(lowestPrice) > 0) {
                 input.setDiscountedPrice(lowestPrice);

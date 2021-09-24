@@ -9,6 +9,8 @@ import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +30,8 @@ public class PriceLoader {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            this.priceInfos = objectMapper.readValue(file, new TypeReference<>() {});
+            this.priceInfos = objectMapper.readValue(file, new TypeReference<>() {
+            });
             this.providers = this.priceInfos.stream().collect(Collectors.groupingBy(PriceInfo::getProvider));
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,13 +39,20 @@ public class PriceLoader {
     }
 
     public PriceInfo getPriceInfo(String providerName, String size) {
-
         if (this.providers.get(providerName) == null || this.providers.get(providerName).isEmpty())
             throw new InvalidInputException("Invalid provider found");
 
         return this.providers.get(providerName).stream()
                 .filter(priceInfo -> priceInfo.getPackageSize().equalsIgnoreCase(size))
                 .findFirst()
+                .orElseThrow(() -> new InvalidInputException("Invalid size found"));
+    }
+
+    public BigDecimal getLowestPriceBySize(String size) {
+        return this.priceInfos.stream()
+                .filter(priceInfo -> priceInfo.getPackageSize().equalsIgnoreCase(size))
+                .map(PriceInfo::getPrice)
+                .min(Comparator.naturalOrder())
                 .orElseThrow(() -> new InvalidInputException("Invalid size found"));
     }
 
