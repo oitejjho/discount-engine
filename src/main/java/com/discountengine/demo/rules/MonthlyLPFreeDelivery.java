@@ -13,29 +13,33 @@ import java.util.Optional;
 
 public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
-    public static final Integer NTH_FREE_DELIVERY = 3;
-    private static final String NAME = "LP";
-    private static final String SIZE = "L";
-    private Map<String, Integer> monthlyCount;
+    public final Integer nthFreeDelivery;
+    private final String name;
+    private final String size;
+    private final PriceLoader priceLoader;
+    private final Map<String, Integer> monthlyCount;
 
-    public MonthlyLPFreeDelivery() {
+    public MonthlyLPFreeDelivery(PriceLoader priceLoader) {
+        this.nthFreeDelivery = 3;
+        this.name = "LP";
+        this.size  = "L";
         this.monthlyCount = new HashMap<>();
+        this.priceLoader = priceLoader;
     }
 
     public void addMonthlySizeCount(LocalDate date, String size) {
         String yearMonthSize = date.getYear() + "" + date.getMonthValue() + size;
-        monthlyCount.put(yearMonthSize, monthlyCount.getOrDefault(yearMonthSize, 0) + 1);
+        this.monthlyCount.put(yearMonthSize, this.monthlyCount.getOrDefault(yearMonthSize, 0) + 1);
     }
 
     public boolean isFreeDelivery(LocalDate date, String size) {
         String yearMonthSize = date.getYear() + "" + date.getMonthValue() + size;
-        return monthlyCount.get(yearMonthSize).equals(NTH_FREE_DELIVERY);
+        return this.monthlyCount.get(yearMonthSize).equals(this.nthFreeDelivery);
     }
 
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
-        PriceLoader priceLoader = new PriceLoader();
-        Optional<PriceInfo> actualPrice = priceLoader.getPriceInfos().stream()
+        Optional<PriceInfo> actualPrice = this.priceLoader.getPriceInfos().stream()
                 .filter(
                         deliveryInfo -> deliveryInfo.getProvider().equalsIgnoreCase(input.getCarrierCode()) &&
                                 deliveryInfo.getPackageSize().equalsIgnoreCase(input.getPackageSize()))
@@ -49,7 +53,7 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
         input.setDiscountedPrice(actualPrice.get().getPrice());
         input.setDiscount(null);
 
-        if (input.getCarrierCode().equalsIgnoreCase(NAME) && input.getPackageSize().equalsIgnoreCase(SIZE)) {
+        if (input.getCarrierCode().equalsIgnoreCase(this.name) && input.getPackageSize().equalsIgnoreCase(this.size)) {
             input.setMatched(true);
             this.addMonthlySizeCount(input.getBookingDate(), input.getPackageSize());
             boolean isFreeDelivery = this.isFreeDelivery(input.getBookingDate(), input.getPackageSize());

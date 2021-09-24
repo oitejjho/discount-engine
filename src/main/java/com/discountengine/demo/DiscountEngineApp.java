@@ -1,6 +1,7 @@
 package com.discountengine.demo;
 
 import com.discountengine.demo.converter.StringToDeliveryDiscountInfo;
+import com.discountengine.demo.loader.PriceLoader;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.ruleengine.RuleEngine;
 import com.discountengine.demo.rules.LowestSizeRule;
@@ -22,8 +23,9 @@ public class DiscountEngineApp {
     public static void main(String[] args) throws IOException {
 
         RuleEngine ruleEngine = new RuleEngine();
-        MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery();
-        LowestSizeRule lowestSizeRule = new LowestSizeRule();
+        PriceLoader priceLoader = new PriceLoader();
+        MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery(priceLoader);
+        LowestSizeRule lowestSizeRule = new LowestSizeRule(priceLoader);
         MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule();
         monthlyTotalDiscountRule.add(lowestSizeRule);
         monthlyTotalDiscountRule.add(monthlyLPFreeDelivery);

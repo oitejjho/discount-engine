@@ -30,9 +30,7 @@ public class FileOperations {
     }
 
     public static <T> void writeLines(String fileName, Flux<T> flux) throws IOException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        File file = new File(classLoader.getResource(fileName).getFile());
-        Path path = Paths.get(file.getPath());
+        Path path = Paths.get(fileName);
         BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
         flux
                 .subscribe(s -> write(bufferedWriter, s.toString()),
