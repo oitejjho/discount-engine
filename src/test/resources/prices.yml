@@ -1,3 +1,12 @@
+- provider: LP
+  packageSize: S
+  price: 1.50
+- provider: LP
+  packageSize: M
+  price: 4.90
+- provider: LP
+  packageSize: L
+  price: 6.90
 - provider: MR
   packageSize: S
   price: 2
