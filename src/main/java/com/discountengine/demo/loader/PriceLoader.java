@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Getter
 public class PriceLoader {
 
-    private final String priceFileName;
+    private String priceFileName;
     private List<PriceInfo> priceInfo;
     private Map<String, List<PriceInfo>> providers;
 
@@ -55,5 +55,6 @@ public class PriceLoader {
                 .min(Comparator.naturalOrder())
                 .orElseThrow(() -> new InvalidInputException("Invalid size found"));
     }
+
 
 }

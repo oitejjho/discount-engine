@@ -1,6 +1,7 @@
 package com.discountengine.demo.loader;
 
 import com.discountengine.demo.exception.InvalidInputException;
+import com.discountengine.demo.model.PriceInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,25 +21,26 @@ public class PriceLoaderTest {
     @Test
     public void testGetLowestPriceBySizeSuccessWithSizeS() {
         BigDecimal lowestPrice = priceLoader.getLowestPriceBySize("S");
-        Assertions.assertEquals(new BigDecimal(2), lowestPrice);
-    }
-
-    @Test
-    public void testGetLowestPriceBySizeSuccessWithSizeM() {
-        BigDecimal lowestPrice = priceLoader.getLowestPriceBySize("M");
-        Assertions.assertEquals(new BigDecimal(3), lowestPrice);
-    }
-
-    @Test
-    public void testGetLowestPriceBySizeSuccessWithSizeL() {
-        BigDecimal lowestPrice = priceLoader.getLowestPriceBySize("L");
-        Assertions.assertEquals(new BigDecimal(4), lowestPrice);
+        Assertions.assertNotNull(lowestPrice);
     }
 
     @Test
     public void testGetLowestPriceBySizeExceptionWithInvalidSize() {
         assertThrows(InvalidInputException.class, () -> {
             BigDecimal lowestPrice = priceLoader.getLowestPriceBySize("invalid size");
+        });
+    }
+
+    @Test
+    public void testGetPriceInfo(){
+        PriceInfo priceInfo = priceLoader.getPriceInfo("MR","S");
+        Assertions.assertNotNull(priceInfo);
+    }
+
+    @Test
+    public void testGetPriceInfoExceptionWithInvalidSize() {
+        assertThrows(InvalidInputException.class, () -> {
+            PriceInfo priceInfo = priceLoader.getPriceInfo("MRR","S");
         });
     }
 }

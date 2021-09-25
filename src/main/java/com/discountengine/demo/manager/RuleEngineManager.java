@@ -5,7 +5,7 @@ import com.discountengine.demo.loader.PriceLoader;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
 import com.discountengine.demo.ruleengine.RuleEngine;
 import com.discountengine.demo.rules.LowestSizeRule;
-import com.discountengine.demo.rules.MonthlyLPFreeDelivery;
+import com.discountengine.demo.rules.MonthlyLPFreeDeliveryRule;
 import com.discountengine.demo.rules.MonthlyTotalDiscountRule;
 import com.discountengine.demo.util.FileOperations;
 import org.slf4j.Logger;
@@ -48,14 +48,14 @@ public class RuleEngineManager {
     public static void applyRules() {
         RuleEngine ruleEngine = new RuleEngine();
         PriceLoader priceLoader = new PriceLoader();
-        MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery(priceLoader);
+        MonthlyLPFreeDeliveryRule monthlyLPFreeDeliveryRule = new MonthlyLPFreeDeliveryRule(priceLoader);
         LowestSizeRule lowestSizeRule = new LowestSizeRule(priceLoader);
         MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule();
         monthlyTotalDiscountRule.add(lowestSizeRule);
-        monthlyTotalDiscountRule.add(monthlyLPFreeDelivery);
+        monthlyTotalDiscountRule.add(monthlyLPFreeDeliveryRule);
 
         ruleEngine.registerRule(monthlyTotalDiscountRule);
-        ruleEngine.registerRule(monthlyLPFreeDelivery);
+        ruleEngine.registerRule(monthlyLPFreeDeliveryRule);
         ruleEngine.registerRule(lowestSizeRule);
 
         Flux<String> deliveryInfoFlux = FileOperations.readLines("input.txt");
