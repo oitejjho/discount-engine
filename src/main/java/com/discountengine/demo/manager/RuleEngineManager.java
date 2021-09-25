@@ -20,31 +20,6 @@ public class RuleEngineManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RuleEngineManager.class);
 
-    /*private static List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> getAllRules(){
-        PriceLoader priceLoader = priceLoader();
-        List<IRule<DeliveryDiscountInfo, DeliveryDiscountInfo>> rules = new ArrayList<>();
-
-        LowestSizeRule lowestSizeRule = new LowestSizeRule(priceLoader);
-        rules.add(lowestSizeRule);
-        MonthlyLPFreeDelivery monthlyLPFreeDelivery = new MonthlyLPFreeDelivery(priceLoader);
-        rules.add(monthlyLPFreeDelivery);
-        MonthlyTotalDiscountRule monthlyTotalDiscountRule = new MonthlyTotalDiscountRule();
-        monthlyTotalDiscountRule.add(lowestSizeRule);
-        monthlyTotalDiscountRule.add(monthlyLPFreeDelivery);
-        rules.add(monthlyTotalDiscountRule);
-
-        return rules;
-    }
-
-    private static PriceLoader priceLoader(){
-        return new PriceLoader();
-    }
-
-    private static RuleEngine ruleEngine(){
-        return new RuleEngine();
-    }*/
-
-
     public static void applyRules() {
         RuleEngine ruleEngine = new RuleEngine();
         PriceLoader priceLoader = new PriceLoader();
@@ -73,6 +48,4 @@ public class RuleEngineManager {
             logger.error("error happened while writing {}, {}", e.getMessage(), e);
         }
     }
-
-
 }

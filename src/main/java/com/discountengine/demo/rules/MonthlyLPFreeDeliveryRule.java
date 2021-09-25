@@ -53,11 +53,8 @@ public class MonthlyLPFreeDeliveryRule implements IRule<DeliveryDiscountInfo, De
                 input.setDiscount(actualPriceInfo.getPrice());
                 return true;
             }
-            return false;
-
         }
         return false;
-
     }
 
     @Override
