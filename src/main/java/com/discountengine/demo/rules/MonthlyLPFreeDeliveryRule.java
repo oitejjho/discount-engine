@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
+public class MonthlyLPFreeDeliveryRule implements IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> {
 
     public final Integer nthFreeDelivery;
     private final String name;
@@ -17,7 +17,7 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
     private final PriceLoader priceLoader;
     private final Map<String, Integer> monthlyCount;
 
-    public MonthlyLPFreeDelivery(PriceLoader priceLoader) {
+    public MonthlyLPFreeDeliveryRule(PriceLoader priceLoader) {
         this.nthFreeDelivery = 3;
         this.name = "LP";
         this.size = "L";
@@ -53,11 +53,8 @@ public class MonthlyLPFreeDelivery implements IRule<DeliveryDiscountInfo, Delive
                 input.setDiscount(actualPriceInfo.getPrice());
                 return true;
             }
-            return false;
-
         }
         return false;
-
     }
 
     @Override

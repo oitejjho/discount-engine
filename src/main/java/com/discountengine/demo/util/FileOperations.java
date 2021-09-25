@@ -15,8 +15,7 @@ public class FileOperations {
 
     private static final Logger logger = LoggerFactory.getLogger(FileOperations.class);
 
-    private FileOperations() {
-    }
+    private FileOperations() {}
 
     public static Flux<String> readLines(String fileName) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -53,6 +52,7 @@ public class FileOperations {
             bw.write(string);
             bw.newLine();
         } catch (IOException e) {
+            logger.info("exception happened {} {}", e.getMessage(), e);
             throw new UncheckedIOException(e);
         }
     }

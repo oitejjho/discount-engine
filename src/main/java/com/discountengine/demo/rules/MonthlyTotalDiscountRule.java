@@ -32,36 +32,29 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
     }
 
     public BigDecimal calculateDiscount(LocalDate date, BigDecimal discount) {
-
         BigDecimal calculatedDiscount;
         String yearMonth = date.getYear() + "" + date.getMonthValue();
 
         if (this.monthlyDiscount.get(yearMonth) != null) {
             BigDecimal totalDiscountSoFar = this.monthlyDiscount.get(yearMonth);
             BigDecimal availableDiscount = this.totalDiscount.subtract(totalDiscountSoFar);
-            if (availableDiscount.compareTo(discount) == 0 || availableDiscount.compareTo(discount) > 0) {
+            if (availableDiscount.compareTo(discount) == 0 || availableDiscount.compareTo(discount) > 0)
                 calculatedDiscount = discount;
-            } else {
+            else
                 calculatedDiscount = availableDiscount;
-            }
-
             this.monthlyDiscount.put(yearMonth, this.monthlyDiscount.get(yearMonth).add(calculatedDiscount));
         } else {
-
             if (this.totalDiscount.compareTo(discount) == 0 || this.totalDiscount.compareTo(discount) > 0)
                 calculatedDiscount = discount;
             else
                 calculatedDiscount = this.totalDiscount;
-
             this.monthlyDiscount.put(yearMonth, calculatedDiscount);
         }
-
         return calculatedDiscount;
     }
 
     @Override
     public boolean matches(DeliveryDiscountInfo input) {
-
         for (IRule<DeliveryDiscountInfo, DeliveryDiscountInfo> rule :
                 this.dependencies) {
             if (rule.matches(input)) {
@@ -73,7 +66,6 @@ public class MonthlyTotalDiscountRule implements IRule<DeliveryDiscountInfo, Del
             }
         }
         return false;
-
     }
 
     @Override
