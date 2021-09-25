@@ -1,6 +1,5 @@
-package converter;
+package com.discountengine.demo.converter;
 
-import com.discountengine.demo.converter.StringToDeliveryDiscountInfo;
 import com.discountengine.demo.model.DeliveryDiscountInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

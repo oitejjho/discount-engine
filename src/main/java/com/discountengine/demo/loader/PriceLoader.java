@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PriceLoader {
 
     private final String priceFileName;
-    private List<PriceInfo> priceInfos;
+    private List<PriceInfo> priceInfo;
     private Map<String, List<PriceInfo>> providers;
 
     public PriceLoader() {
@@ -30,9 +30,9 @@ public class PriceLoader {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            this.priceInfos = objectMapper.readValue(file, new TypeReference<>() {
+            this.priceInfo = objectMapper.readValue(file, new TypeReference<>() {
             });
-            this.providers = this.priceInfos.stream().collect(Collectors.groupingBy(PriceInfo::getProvider));
+            this.providers = this.priceInfo.stream().collect(Collectors.groupingBy(PriceInfo::getProvider));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,7 +49,7 @@ public class PriceLoader {
     }
 
     public BigDecimal getLowestPriceBySize(String size) {
-        return this.priceInfos.stream()
+        return this.priceInfo.stream()
                 .filter(priceInfo -> priceInfo.getPackageSize().equalsIgnoreCase(size))
                 .map(PriceInfo::getPrice)
                 .min(Comparator.naturalOrder())
